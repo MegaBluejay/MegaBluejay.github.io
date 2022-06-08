@@ -4,7 +4,7 @@ title: Home
 
 <h2>Welcome</h2>
 
-<img src="/images/haskell-logo.png" style="float: right; margin: 10px;" />
+<img src="$getUrl("images/haskell-logo.png")$" style="float: right; margin: 10px;" />
 
 <p>Welcome to my blog!</p>
 
@@ -13,4 +13,4 @@ title: Home
 <h2>Posts</h2>
 $partial("templates/post-list.html")$
 
-<p>…or you can find more in the <a href="/archive/index.html">archives</a>.</p>
+<p>…or you can find more in the <a href="$getUrl("archive.html")$">archives</a>.</p>

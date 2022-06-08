@@ -20,8 +20,7 @@ main = hakyll $ do
     route cleanRoute
     compile $
       pandocCompiler
-        >>= loadAndApplyTemplate "templates/default.html" defaultContext
-        >>= relativizeUrls
+        >>= loadAndApplyTemplate "templates/default.html" defCtx
         >>= cleanIndexUrls
 
   match "posts/*" $ do
@@ -30,7 +29,6 @@ main = hakyll $ do
       pandocCompiler
         >>= loadAndApplyTemplate "templates/post.html" postCtx
         >>= loadAndApplyTemplate "templates/default.html" postCtx
-        >>= relativizeUrls
         >>= cleanIndexUrls
 
   create ["archive.html"] $ do
@@ -40,12 +38,11 @@ main = hakyll $ do
       let archiveCtx =
             listField "posts" postCtx (return posts)
               <> constField "title" "Archives"
-              <> defaultContext
+              <> defCtx
 
       makeItem ""
         >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
         >>= loadAndApplyTemplate "templates/default.html" archiveCtx
-        >>= relativizeUrls
         >>= cleanIndexUrls
 
   match "index.html" $ do
@@ -54,12 +51,11 @@ main = hakyll $ do
       posts <- recentFirst =<< loadAll "posts/*"
       let indexCtx =
             listField "posts" postCtx (return posts)
-              <> defaultContext
+              <> defCtx
 
       getResourceBody
         >>= applyAsTemplate indexCtx
         >>= loadAndApplyTemplate "templates/default.html" indexCtx
-        >>= relativizeUrls
         >>= cleanIndexUrls
 
   match "templates/*" $ compile templateBodyCompiler
@@ -68,7 +64,7 @@ main = hakyll $ do
 postCtx :: Context String
 postCtx =
   dateField "date" "%B %e, %Y"
-    <> defaultContext
+    <> defCtx
 
 cleanRoute :: Routes
 cleanRoute = customRoute createIndexRoute
@@ -84,3 +80,16 @@ cleanIndexUrls = return . fmap (withUrls clean)
   clean url
     | idx `isSuffixOf` url = take (length url - length idx) url
     | otherwise = url
+
+urlCtx :: Context a
+urlCtx = functionField "getUrl" $
+  \args _ -> case args of
+    [path] -> do
+      mbRoute <- getRoute $ fromFilePath path
+      case mbRoute of
+        Just route -> return $ toUrl (normalise route)
+        Nothing -> fail "unkown path"
+    _ -> fail "getUrl takes one argument"
+
+defCtx :: Context String
+defCtx = urlCtx <> defaultContext
