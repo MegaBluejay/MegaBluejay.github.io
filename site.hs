@@ -6,7 +6,7 @@ import Hakyll
 import System.FilePath.Posix
 
 main :: IO ()
-main = hakyll $ do
+main = hakyllWith config $ do
   match "images/*" $ do
     route idRoute
     compile copyFileCompiler
@@ -90,3 +90,9 @@ urlCtx = functionField "getUrl" $
 
 defCtx :: Context String
 defCtx = urlCtx <> defaultContext
+
+config :: Configuration
+config =
+  defaultConfiguration
+    { destinationDirectory = "docs"
+    }
