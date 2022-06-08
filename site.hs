@@ -1,13 +1,10 @@
---------------------------------------------------------------------------------
 {-# LANGUAGE LambdaCase #-}
---------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 
 import Data.List
 import Hakyll
 import System.FilePath.Posix
 
---------------------------------------------------------------------------------
 main :: IO ()
 main = hakyll $ do
   match "images/*" $ do
@@ -62,7 +59,6 @@ main = hakyll $ do
 
   match "templates/*" $ compile templateBodyCompiler
 
---------------------------------------------------------------------------------
 postCtx :: Context String
 postCtx =
   dateField "date" "%B %e, %Y"
