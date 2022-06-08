@@ -1,4 +1,6 @@
 --------------------------------------------------------------------------------
+{-# LANGUAGE LambdaCase #-}
+--------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 
 import Data.List
@@ -84,9 +86,8 @@ cleanIndexUrls = return . fmap (withUrls clean)
 urlCtx :: Context a
 urlCtx = functionField "getUrl" $
   \args _ -> case args of
-    [path] -> do
-      mbRoute <- getRoute $ fromFilePath path
-      case mbRoute of
+    [path] ->
+      getRoute (fromFilePath path) >>= \case
         Just route -> return $ toUrl (normalise route)
         Nothing -> fail "unkown path"
     _ -> fail "getUrl takes one argument"
